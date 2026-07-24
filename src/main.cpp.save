@@ -1,0 +1,73 @@
+#include vector
+
+enum class OrderStatus{
+Pending,
+Shipped,
+Delivered
+};
+
+struct Order{
+int id;
+double price;
+OrderStatus status
+};
+
+
+void process_orders(std::vector<Order>& orders) {
+	 for (Order x : std;;vector<Order>){
+		if (Order x.status  == Pending){
+			Order x.price * 1.05;
+			Order x.status = Shippe}}}}}}}}}
+}
+}
+#include <vector>
+
+enum class OrderStatus {
+    Pending,
+    Shipped,
+    Delivered
+};
+
+struct Order {
+    int id;
+    double price;
+    OrderStatus status;
+};
+
+void process_orders(std::vector<Order>& orders) {
+    // 1. Element type with & (Order&) so we modify in-place
+    // 2. Loop variable name (order)
+    // 3. Collection name (orders)
+    for (Order& order : orders) {
+        if (order.status == OrderStatus::Pending) { // Scope resolution ::
+            order.price *= 1.05;                    // Save the calculation
+            order.status = OrderStatus::Shipped;    // Scope resolution ::
+        }
+    }
+}
+cough python habits die hard#include <vector>
+
+enum class OrderStatus {
+    Pending,
+    Shipped,
+    Delivered
+};
+
+struct Order {
+    int id;
+    double price;
+    OrderStatus status;
+};
+
+void process_orders(std::vector<Order>& orders) {
+    // 1. Element type with & (Order&) so we modify in-place
+    // 2. Loop variable name (order)
+    // 3. Collection name (orders)
+    for (Order& order : orders) {
+        if (order.status == OrderStatus::Pending) { // Scope resolution ::
+            order.price *= 1.05;                    // Save the calculation
+            order.status = OrderStatus::Shipped;    // Scope resolution ::
+        }
+    }
+}
+cough python habits dfdda[sdfwaksda;fak	dfafdaharf
