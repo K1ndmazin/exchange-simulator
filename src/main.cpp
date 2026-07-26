@@ -55,7 +55,22 @@ private:
     std::map<double, std::deque<Order>> asks;
 };
 
+void match(LimitOrderBook& book, Order incoming_order) {
+    while (incoming_order.quantity > 0 && !book.asks_empty() && incoming_order.price >= book.get_best_ask().price) {
+        auto& resting = book.get_best_ask();
+        if (incoming_order.quantity >= resting.quantity) {
+            incoming_order.quantity -= resting.quantity;
+            book.pop_best_ask();
+        } else {
+            resting.quantity -= incoming_order.quantity;
+            incoming_order.quantity = 0;
+        }
+    }
 
+    if (incoming_order.quantity > 0) {
+        book.add_order(incoming_order);
+    }
+}
 void process_orders(std::vector<Order>& orders){
         for (Order& order : orders){
                 if (order.status == OrderStatus::Pending){
@@ -64,6 +79,7 @@ void process_orders(std::vector<Order>& orders){
                 }
         }
 }
+
 int main(){
 	return 0;
 }
