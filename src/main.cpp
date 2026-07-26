@@ -36,6 +36,9 @@ bool bids_empty() const {
 Order& get_best_ask(){
         return asks.begin()->second.front();
     }
+Order& get_best_bid(){
+        return bids.begin()->second.front();
+    }
 void pop_best_ask(){
    auto  best_ask = asks.begin();
         best_ask->second.pop_front();
@@ -56,14 +59,27 @@ private:
 };
 
 void match(LimitOrderBook& book, Order incoming_order) {
-    while (incoming_order.quantity > 0 && !book.asks_empty() && incoming_order.price >= book.get_best_ask().price) {
-        auto& resting = book.get_best_ask();
-        if (incoming_order.quantity >= resting.quantity) {
-            incoming_order.quantity -= resting.quantity;
-            book.pop_best_ask();
-        } else {
-            resting.quantity -= incoming_order.quantity;
-            incoming_order.quantity = 0;
+    if (incoming_order.side == Side::Buy) {
+        while (incoming_order.quantity > 0 && !book.asks_empty() && incoming_order.price >= book.get_best_ask().price) {
+            auto& resting = book.get_best_ask();
+            if (incoming_order.quantity >= resting.quantity) {
+                incoming_order.quantity -= resting.quantity;
+                book.pop_best_ask();
+            } else {
+                resting.quantity -= incoming_order.quantity;
+                incoming_order.quantity = 0;
+            }
+        }
+    } else {
+        while (incoming_order.quantity > 0 && !book.bids_empty() && incoming_order.price <= book.get_best_bid().price) {
+            auto& resting = book.get_best_bid();
+            if (incoming_order.quantity >= resting.quantity) {
+                incoming_order.quantity -= resting.quantity;
+                book.pop_best_bid();
+            } else {
+                resting.quantity -= incoming_order.quantity;
+                incoming_order.quantity = 0;
+            }
         }
     }
 
