@@ -43,7 +43,13 @@ void pop_best_ask(){
                 asks.erase(best_ask);
                }
 }
-
+void pop_best_bid(){
+   auto best_bid = bids.begin();
+        best_bid->second.pop_front();
+        if (best_bid->second.empty()){
+                bids.erase(best_bid);
+                }
+}
 private:
     std::map<double, std::deque<Order>, std::greater<double>> bids;
     std::map<double, std::deque<Order>> asks;
