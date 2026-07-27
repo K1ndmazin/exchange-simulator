@@ -2,6 +2,7 @@
 #include <map>
 #include <deque>
 #include <functional>
+#include <iostream>
 
 enum class OrderStatus{
         Pending,
@@ -97,5 +98,13 @@ void process_orders(std::vector<Order>& orders){
 }
 
 int main(){
-	return 0;
+        Order order_1 = {1, 30, 50, Side::Sell, OrderStatus::Pending};
+        Order order_2 = {2, 20, 51, Side::Sell, OrderStatus::Pending};
+        Order incoming_order = {43, 45, 58, Side::Buy, OrderStatus::Pending};
+        LimitOrderBook book_1{};
+        book_1.add_order(order_1);
+        book_1.add_order(order_2);
+        match(book_1, incoming_order);
+        std::cout << book_1.get_best_ask().price << " " << book_1.get_best_ask().quantity;
+        return 0;
 }
