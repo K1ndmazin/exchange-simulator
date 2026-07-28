@@ -19,15 +19,26 @@ struct Order{
  OrderStatus status;
 };
 
+struct OrderLocation {
+	Side side;
+	double price;
+	std::list<Order>::iterator handle;
+};
+
 class LimitOrderBook {
 public:
-    void add_order(Order order){
-        if (order.side == Side::Buy){
-                bids[order.price].push_back(order);
-        }
-        if (order.side == Side:: Sell){
-                asks[order.price].push_back(order);
-        }
+void add_order(Order order) {
+    if (order.side == Side::Buy) {
+        std::list<Order>& level = bids[order.price];
+        level.push_back(order);
+        auto it = std::prev(level.end());
+        order_index[order.id] = OrderLocation{order.side, order.price, it};
+    } else {
+        std::list<Order>& level = asks[order.price];
+        level.push_back(order);
+        auto it = std::prev(level.end());
+        order_index[order.id] = OrderLocation{order.side, order.price, it};
+    }
 }
 bool asks_empty() const {
     return asks.empty();
@@ -58,6 +69,7 @@ void pop_best_bid(){
 private:
     std::map<double, std::list<Order>, std::greater<double>> bids;
     std::map<double, std::list<Order>> asks;
+    std::unordered_map<int, OrderLocation> order_index;
 };
 
 void match(LimitOrderBook& book, Order incoming_order) {
