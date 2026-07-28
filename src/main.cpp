@@ -1,5 +1,6 @@
 #include <vector>
 #include <map>
+#include <list>
 #include <deque>
 #include <functional>
 #include <iostream>
@@ -55,8 +56,8 @@ void pop_best_bid(){
                 }
 }
 private:
-    std::map<double, std::deque<Order>, std::greater<double>> bids;
-    std::map<double, std::deque<Order>> asks;
+    std::map<double, std::list<Order>, std::greater<double>> bids;
+    std::map<double, std::list<Order>> asks;
 };
 
 void match(LimitOrderBook& book, Order incoming_order) {
