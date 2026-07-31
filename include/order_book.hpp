@@ -89,6 +89,9 @@ void print_asks_at(double price) {
                 std::cout << "id:" << order.id << " qty:" << order.quantity << " | ";
 }
 }
+bool contains(int id) const {
+	return order_index.find(id) != order_index.end();
+}
 private:
     std::map<double, std::list<Order>, std::greater<double>> bids;
     std::map<double, std::list<Order>> asks;
