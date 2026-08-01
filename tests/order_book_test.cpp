@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <rapidcheck/gtest.h>
 #include "order_book.hpp"
 
 TEST(MatchTest, BuyOrderSweepsMultiplePriceLevels) {
@@ -28,4 +29,26 @@ TEST(CancelTest, CancelRemovesCorrectOrderFromMiddleOfList) {
 
     EXPECT_FALSE(book.contains(3));
     EXPECT_TRUE(book.contains(4));
+}
+RC_GTEST_PROP(MatchProperties, QuantityIsConserved, ()) {
+    int qty1 = *rc::gen::inRange(1, 10000);
+    int qty2 = *rc::gen::inRange(1, 10000);
+    int initial= qty1+qty2;
+  
+   LimitOrderBook book{};
+   Order order{1, qty2, 50, Side::Sell, OrderStatus :: Pending};
+   Order incoming_order{2, qty1, 60, Side::Buy, OrderStatus :: Pending};
+   book.add_order(order);
+   match(book, incoming_order);
+if (qty1 > qty2){
+ RC_ASSERT(book.asks_empty());
+RC_ASSERT(!book.bids_empty());
+RC_ASSERT(book.get_best_bid().quantity==qty1-qty2);
+} else if (qty2> qty1){
+RC_ASSERT(!book.asks_empty());
+RC_ASSERT(book.get_best_ask().quantity == qty2- qty1);
+}  else {
+    RC_ASSERT(book.asks_empty());
+    RC_ASSERT(book.bids_empty());
+}
 }
