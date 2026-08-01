@@ -11,7 +11,14 @@ FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/heads/main.zip
 )
-
+# RapidCheck (property-based testing)
+FetchContent_Declare(
+  rapidcheck
+  GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
+  GIT_TAG master
+)
+set(RC_ENABLE_GTEST ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(rapidcheck)
 # Google Benchmark
 FetchContent_Declare(
   benchmark
@@ -29,7 +36,7 @@ add_executable(main src/main.cpp)
 # Tests
 enable_testing()
 add_executable(order_book_test tests/order_book_test.cpp)
-target_link_libraries(order_book_test GTest::gtest_main)
+target_link_libraries(order_book_test GTest::gtest_main rapidcheck rapidcheck_gtest)
 
 # Benchmarks
 add_executable(order_book_bench benchmarks/order_book_bench.cpp)
