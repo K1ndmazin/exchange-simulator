@@ -52,3 +52,19 @@ RC_ASSERT(book.get_best_ask().quantity == qty2- qty1);
     RC_ASSERT(book.bids_empty());
 }
 }
+RC_GTEST_PROP(CancelProperties, CancelRemovesOnlyTargetOrder, ()) {
+    int qty1 = *rc::gen::inRange(1, 10000);
+    int qty2 = *rc::gen::inRange(1, 10000);
+
+    LimitOrderBook book{};
+    Order order_a = {1, qty1, 50, Side::Sell, OrderStatus::Pending};
+    Order order_b = {2, qty2, 50, Side::Sell, OrderStatus::Pending};
+
+    book.add_order(order_a);
+    book.add_order(order_b);
+    book.cancel(1);
+
+    RC_ASSERT(!book.contains(1));
+    RC_ASSERT(book.contains(2));
+    RC_ASSERT(book.get_best_ask().quantity == qty2);
+}
