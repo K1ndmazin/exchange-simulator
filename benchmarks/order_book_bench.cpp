@@ -36,7 +36,7 @@ BENCHMARK(BM_MatchBuySweep);
 static void BM_MatchAgainstLargeBook(benchmark::State& state) {
     for (auto _ : state) {
         state.PauseTiming();
-	std::pmr::unsynchronized_pool_resource pool;
+	std::pmr::monotonic_buffer_resource pool;
         LimitOrderBook book = build_random_book(1000, &pool);
         Order incoming = {1001, 50, 65, Side::Buy, OrderStatus::Pending};
         state.ResumeTiming();
