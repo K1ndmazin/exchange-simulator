@@ -1,8 +1,8 @@
 #include <benchmark/benchmark.h>
 #include <random>
 #include "order_book.hpp"
-LimitOrderBook build_random_book(int num_orders, std::pmr::memory_resource* mem_resource) {
-    LimitOrderBook book(mem_resource);
+LimitOrderBook build_random_book(int num_orders) {
+    LimitOrderBook book;
     std::mt19937 rng(42);
     std::uniform_int_distribution<int> price_dist(0, 29);
     std::uniform_int_distribution<int> qty_dist(1, 100);
@@ -36,10 +36,10 @@ BENCHMARK(BM_MatchBuySweep);
 static void BM_MatchAgainstLargeBook(benchmark::State& state) {
     for (auto _ : state) {
         state.PauseTiming();
-	std::pmr::monotonic_buffer_resource pool;
-        LimitOrderBook book = build_random_book(1000, &pool);
+        LimitOrderBook book = build_random_book(1000);
         Order incoming = {1001, 50, 65, Side::Buy, OrderStatus::Pending};
         state.ResumeTiming();
+
         match(book, incoming);
         benchmark::DoNotOptimize(book);
     }
