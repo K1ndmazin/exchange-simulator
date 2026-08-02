@@ -4,13 +4,12 @@
 #include <unordered_map>
 #include <functional>
 #include <iostream>
+#include <memory_resource>
 
-enum class OrderStatus{
-        Pending,
-        Shipped,
-        Delivered
-};
+enum class OrderStatus{ Pending, Shipped, Delivered };
+
 enum class Side { Buy, Sell };
+
 struct Order{
  int id;
  int quantity;
@@ -19,22 +18,31 @@ struct Order{
  OrderStatus status;
 };
 
+using OrderList = std::pmr::list<Order>; 
+
 struct OrderLocation {
         Side side;
         double price;
-        std::list<Order>::iterator handle;
+        OrderList::iterator handle;
 };
+
+using AskMap = std::pmr::map<double, OrderList>;
+using BidMap = std::pmr::map<double, OrderList, std::greater<double>>;
+using OrderIndex = std::unordered_map<int, OrderLocation>; 
 
 class LimitOrderBook {
 public:
+    explicit LimitOrderBook(std::pmr::memory_resource* mem_resource = std::pmr::get_default_resource())
+        : bids(mem_resource), asks(mem_resource) {}
+
 void add_order(Order order) {
     if (order.side == Side::Buy) {
-        std::list<Order>& level = bids[order.price];
+        OrderList& level = bids[order.price];
         level.push_back(order);
         auto it = std::prev(level.end());
         order_index[order.id] = OrderLocation{order.side, order.price, it};
     } else {
-        std::list<Order>& level = asks[order.price];
+        OrderList& level = asks[order.price];
         level.push_back(order);
         auto it = std::prev(level.end());
         order_index[order.id] = OrderLocation{order.side, order.price, it};
@@ -93,9 +101,9 @@ bool contains(int id) const {
 	return order_index.find(id) != order_index.end();
 }
 private:
-    std::map<double, std::list<Order>, std::greater<double>> bids;
-    std::map<double, std::list<Order>> asks;
-    std::unordered_map<int, OrderLocation> order_index;
+    BidMap bids;
+    AskMap asks;
+    OrderIndex order_index;
 };
 
 void match(LimitOrderBook& book, Order incoming_order) {
